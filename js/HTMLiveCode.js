@@ -5,27 +5,27 @@ var HTMLiveCode = function() {
 	_resizeBar = document.createElement("div"),
 	_resizeArea = document.createElement("div"),
 	_fontsizeStylesheet = document.createElement("style"),
-	_menuBar = document.getElementById("menu-bar"),
-	_menuStartButton = document.createElement("div"),
-	_imagepathTooltip = document.getElementById("imagepath-tooltip"),
+	//_menuBar = document.getElementById("menu-bar"),
+	//_menuStartButton = document.createElement("div"),
+	//_imagepathTooltip = document.getElementById("imagepath-tooltip"),
 	_introTooltip = document.getElementById("intro-tooltip"),
-	_menuBtnStyleBright = document.getElementById("btn-style-bright"),
-	_menuBtnStyleDark = document.getElementById("btn-style-dark"),
-	_menuBtnFonsizeIncrease = document.getElementById("btn-fontsize-increase"),
-	_menuBtnFonsizeDecrease = document.getElementById("btn-fontsize-decrease"),
-	_menuBtnFonsizeReset = document.getElementById("btn-fontsize-reset"),
-	_menuBtnOptionsGutter = document.getElementById("btn-options-gutter"),
-	_menuBtnOptionsWordwrap = document.getElementById("btn-options-wordwrap"),
-	_menuLabelImagePath = document.getElementById("label-imagepath"),
-	_menuTxtImagePath = document.getElementById("txt-imagepath"),
-	_menuBtnResetCode = document.getElementById("btn-reset-code"),
-	_menuBtnResetSettings = document.getElementById("btn-reset-settings"),
-	_menuTxtImagePathFocus = false,
+	//_menuBtnStyleBright = document.getElementById("btn-style-bright"),
+	//_menuBtnStyleDark = document.getElementById("btn-style-dark"),
+	//_menuBtnFonsizeIncrease = document.getElementById("btn-fontsize-increase"),
+	//_menuBtnFonsizeDecrease = document.getElementById("btn-fontsize-decrease"),
+	//_menuBtnFonsizeReset = document.getElementById("btn-fontsize-reset"),
+	//_menuBtnOptionsGutter = document.getElementById("btn-options-gutter"),
+	//_menuBtnOptionsWordwrap = document.getElementById("btn-options-wordwrap"),
+	//_menuLabelImagePath = document.getElementById("label-imagepath"),
+	//_menuTxtImagePath = document.getElementById("txt-imagepath"),
+	//_menuBtnResetCode = document.getElementById("btn-reset-code"),
+	//_menuBtnResetSettings = document.getElementById("btn-reset-settings"),
+	//_menuTxtImagePathFocus = false,
 	_initialized = false,
 	_resizeBarMouseDown = false,
 	_resizeBarStartPosition = null,
 	_resizeBarWidth = 6,
-	_menuBarTimer = null,
+	//_menuBarTimer = null,
 	_codeView = null,
 	_codeViewStartWidth = null,
 	_codeViewWidthRatio = 50,
@@ -36,6 +36,7 @@ var HTMLiveCode = function() {
 	_jsLintResult = null,
 	_editorStorageSettings = {},
 	_editorDefaultSettings = {
+        element: settings.element || 'body',
 		theme: settings.theme || "bright",
 		fontSize: 1,
 		wordWrap: settings.wordWrap === false ? false : true,
@@ -44,6 +45,9 @@ var HTMLiveCode = function() {
 		codeViewWidth: parseInt(window.innerWidth) / 2,
 		livePreviewWidth: (parseInt(window.innerWidth) / 2) - _resizeBarWidth
 	};
+
+    $(_editorDefaultSettings.element).after('<div id="HTMLiveCodeContainer"></div>');
+    var element = document.getElementById('HTMLiveCodeContainer');
 
 	var _updateViews = function() {
 		var codeMirrorContent = _codeMirrorInstance.getValue(),
@@ -109,7 +113,7 @@ var HTMLiveCode = function() {
 	var _settingsController = {
 		updateStorageSetting: function(settingKey, settingValue) {
 			_editorStorageSettings[settingKey] = settingValue;
-			localStorage.setItem("htmlivecodeSettings", JSON.stringify(_editorStorageSettings));
+			//localStorage.setItem("htmlivecodeSettings", JSON.stringify(_editorStorageSettings));
 		},
 		checkStorageSetting: function(settingValue) {
 			return (settings[settingValue] !== null && typeof settings[settingValue] !== "undefined") ? settings[settingValue] : (_editorStorageSettings[settingValue] !== null && typeof _editorStorageSettings[settingValue] !== "undefined") ? _editorStorageSettings[settingValue] : _editorDefaultSettings[settingValue];
@@ -211,202 +215,203 @@ var HTMLiveCode = function() {
 		}
 	}
 	
-	var _menuController = {
-		init: function() {
-			_menuStartButton.setAttribute("id", "menu-startbutton");
-			_codeView.appendChild(_menuStartButton);
-
-			window.addEventListener("mousemove", function(evt){
-				if ((evt.pageY - 40) < 150) {
-					_menuStartButton.style.opacity = Math.abs(1 - ((evt.pageY - 42) / 100) / 1.5);
-					if (_menuStartButton.style.opacity >= 1) _menuStartButton.style.opacity = 1;
-				} else {
-					_menuStartButton.style.opacity = 0;
-				}
-			});
-
-			_menuController.setButtonStates();
-			_menuStartButton.addEventListener("mouseover", _menuController.menuMouseOverHandler);
-			_menuBar.addEventListener("mouseover", _menuController.menuMouseOverHandler);
-			_menuBar.addEventListener("mouseout", _menuController.menuMouseOutHandler);
-			_menuTxtImagePath.value = _imageProxyPath || "";
-
-			_menuBtnStyleBright.addEventListener("click", function(){
-				_menuController.setTheme(_menuBtnStyleBright, "bright");
-			});
-
-			_menuBtnStyleDark.addEventListener("click", function(){
-				_menuController.setTheme(_menuBtnStyleDark, "dark");
-			});
-
-			_menuBtnFonsizeIncrease.addEventListener("click", function(){
-				_menuController.changeEditorFontsize(1);
-			});
-			
-			_menuBtnFonsizeDecrease.addEventListener("click", function(){
-				_menuController.changeEditorFontsize(-1);
-			});
-			
-			_menuBtnFonsizeReset.addEventListener("click", function(){
-				_menuController.changeEditorFontsize(0);
-			});
-
-			_menuBtnOptionsGutter.addEventListener("click", function(){
-				_menuController.toggleGutter();
-			});
-			
-			_menuBtnOptionsWordwrap.addEventListener("click", function(){
-				_menuController.toggleWordWrap();
-			});
-			
-			_menuLabelImagePath.addEventListener("mouseover", function(){
-				_imagepathTooltip.style.display = "block";
-			});
-			
-			_menuLabelImagePath.addEventListener("mouseout", function(){
-				_imagepathTooltip.style.display = "none";
-			});
-
-			_menuTxtImagePath.addEventListener("keyup", function(){
-				_imageProxyPath = this.value;
-				_updateViews();
-				_settingsController.updateStorageSetting("imageProxyPath", _imageProxyPath);
-			});
-			
-			_menuTxtImagePath.addEventListener("focus", function(){
-				_menuTxtImagePathFocus = true;
-			});
-			
-			_menuTxtImagePath.addEventListener("blur", function(){
-				_menuTxtImagePathFocus = false;
-			});
-
-			_menuBtnResetCode.addEventListener("click", function(){
-				if (confirm("Reset code to default template? All changes will be lost.")) {
-					localStorage.removeItem("htmlivecodeText");
-					_codeMirrorInstance.setValue(HTMLiveCodeTemplate);
-					_codeMirrorInstance.refresh();
-				}
-			});
-
-			_menuBtnResetSettings.addEventListener("click", function(){
-				if (confirm("Reset editor settings to default?")) {
-					localStorage.removeItem("htmlivecodeSettings");
-					_editorStorageSettings = _cloneObject(_editorDefaultSettings);
-					_menuController.setButtonStates();
-					_menuTxtImagePath.value = _settingsController.checkStorageSetting("imageProxyPath") || "";
-					_settingsController.applySettings();
-					_codeMirrorInstance.refresh();
-				}
-			});
-		},
-		changeEditorFontsize: function(value) {
-			var newFontsize = (Math.round(parseFloat(_editorStorageSettings.fontSize) * 100) / 100) + (value === 1 ? 0.1 : -0.1);
-			newFontsize = (value === 0 ? 1 : newFontsize);
-			if (parseFloat(newFontsize) < 0.1) newFontsize = 0.1;
-			_fontsizeStylesheet.removeChild(_fontsizeStylesheet.childNodes[0])
-			_fontsizeStylesheet.appendChild(document.createTextNode(".CodeMirror{font-size:" + newFontsize + "em;}"));
-			_settingsController.updateStorageSetting("fontSize", newFontsize);
-			_codeMirrorInstance.refresh();
-		},
-		toggleGutter: function() {
-			var isActive = _menuBtnOptionsGutter.getAttribute("class") === "menu-button-active",
-			gutterSetting = isActive ? false : true;
-			_menuBtnOptionsGutter.setAttribute("class", isActive ? "menu-button" : "menu-button-active");
-			_codeMirrorInstance.setOption("lineNumbers", gutterSetting);
-			_codeMirrorInstance.setOption("gutter", gutterSetting);
-			_settingsController.updateStorageSetting("gutter", gutterSetting);
-		},
-		toggleWordWrap: function() {
-			var isActive = _menuBtnOptionsWordwrap.getAttribute("class") === "menu-button-active",
-			wordwrapSetting = isActive ? false : true;
-			_menuBtnOptionsWordwrap.setAttribute("class", isActive ? "menu-button" : "menu-button-active");
-			_codeMirrorInstance.setOption("lineWrapping", wordwrapSetting);
-			_settingsController.updateStorageSetting("wordWrap", wordwrapSetting);
-		},
-		setTheme: function(menuBtn, themeName) {
-			var isActive = menuBtn.getAttribute("class") === "menu-button-active",
-			oppositeMenuButton = (themeName == "dark" ? _menuBtnStyleBright : _menuBtnStyleDark);
-
-			if (!isActive) {
-				menuBtn.setAttribute("class", isActive ? "menu-button" : "menu-button-active");
-				oppositeMenuButton.setAttribute("class", "menu-button");
-			}
-
-			_codeMirrorInstance.setOption("theme", themeName);
-			_settingsController.updateStorageSetting("theme", themeName);
-		},
-		setButtonStates: function() {
-			_menuBtnStyleBright.setAttribute("class", _settingsController.checkStorageSetting("theme") === "bright" ? "menu-button-active" : "menu-button");
-			_menuBtnStyleDark.setAttribute("class", _settingsController.checkStorageSetting("theme") === "dark" ? "menu-button-active" : "menu-button");
-			_menuBtnOptionsGutter.setAttribute("class", _settingsController.checkStorageSetting("gutter") === true ? "menu-button-active" : "menu-button");
-			_menuBtnOptionsWordwrap.setAttribute("class", _settingsController.checkStorageSetting("wordWrap") === true ? "menu-button-active" : "menu-button");
-		},
-		hideMenuBar: function() {
-			_menuBar.style.display = "none";
-			_menuStartButton.style.display = "block";
-		},
-		showMenuBar: function() {
-			_menuBarTimer = clearTimeout(_menuBarTimer);
-			_menuBar.style.display = "block";
-			_menuStartButton.style.display = "none";
-		},
-		menuMouseOverHandler: function() {
-			_menuController.showMenuBar();
-		},
-		menuMouseOutHandler: function(evt) {
-			if (!_menuTxtImagePathFocus) _menuBarTimer = setTimeout(_menuController.hideMenuBar, 800);
-		}
-	}
+	//var _menuController = {
+	//	init: function() {
+	//		_menuStartButton.setAttribute("id", "menu-startbutton");
+	//		_codeView.appendChild(_menuStartButton);
+    //
+	//		window.addEventListener("mousemove", function(evt){
+	//			if ((evt.pageY - 40) < 150) {
+	//				_menuStartButton.style.opacity = Math.abs(1 - ((evt.pageY - 42) / 100) / 1.5);
+	//				if (_menuStartButton.style.opacity >= 1) _menuStartButton.style.opacity = 1;
+	//			} else {
+	//				_menuStartButton.style.opacity = 0;
+	//			}
+	//		});
+    //
+	//		_menuController.setButtonStates();
+	//		//_menuStartButton.addEventListener("mouseover", _menuController.menuMouseOverHandler);
+	//		//_menuBar.addEventListener("mouseover", _menuController.menuMouseOverHandler);
+	//		//_menuBar.addEventListener("mouseout", _menuController.menuMouseOutHandler);
+	//		_menuTxtImagePath.value = _imageProxyPath || "";
+    //
+	//		_menuBtnStyleBright.addEventListener("click", function(){
+	//			_menuController.setTheme(_menuBtnStyleBright, "bright");
+	//		});
+    //
+	//		_menuBtnStyleDark.addEventListener("click", function(){
+	//			_menuController.setTheme(_menuBtnStyleDark, "dark");
+	//		});
+    //
+	//		_menuBtnFonsizeIncrease.addEventListener("click", function(){
+	//			_menuController.changeEditorFontsize(1);
+	//		});
+	//
+	//		_menuBtnFonsizeDecrease.addEventListener("click", function(){
+	//			_menuController.changeEditorFontsize(-1);
+	//		});
+	//
+	//		_menuBtnFonsizeReset.addEventListener("click", function(){
+	//			_menuController.changeEditorFontsize(0);
+	//		});
+    //
+	//		_menuBtnOptionsGutter.addEventListener("click", function(){
+	//			_menuController.toggleGutter();
+	//		});
+	//
+	//		_menuBtnOptionsWordwrap.addEventListener("click", function(){
+	//			_menuController.toggleWordWrap();
+	//		});
+	//
+	//		_menuLabelImagePath.addEventListener("mouseover", function(){
+	//			_imagepathTooltip.style.display = "block";
+	//		});
+	//
+	//		_menuLabelImagePath.addEventListener("mouseout", function(){
+	//			_imagepathTooltip.style.display = "none";
+	//		});
+    //
+	//		_menuTxtImagePath.addEventListener("keyup", function(){
+	//			_imageProxyPath = this.value;
+	//			_updateViews();
+	//			_settingsController.updateStorageSetting("imageProxyPath", _imageProxyPath);
+	//		});
+	//
+	//		_menuTxtImagePath.addEventListener("focus", function(){
+	//			_menuTxtImagePathFocus = true;
+	//		});
+	//
+	//		_menuTxtImagePath.addEventListener("blur", function(){
+	//			_menuTxtImagePathFocus = false;
+	//		});
+    //
+	//		_menuBtnResetCode.addEventListener("click", function(){
+	//			if (confirm("Reset code to default template? All changes will be lost.")) {
+	//				localStorage.removeItem("htmlivecodeText");
+	//				_codeMirrorInstance.setValue(HTMLiveCodeTemplate);
+	//				_codeMirrorInstance.refresh();
+	//			}
+	//		});
+    //
+	//		_menuBtnResetSettings.addEventListener("click", function(){
+	//			if (confirm("Reset editor settings to default?")) {
+	//				localStorage.removeItem("htmlivecodeSettings");
+	//				_editorStorageSettings = _cloneObject(_editorDefaultSettings);
+	//				_menuController.setButtonStates();
+	//				_menuTxtImagePath.value = _settingsController.checkStorageSetting("imageProxyPath") || "";
+	//				_settingsController.applySettings();
+	//				_codeMirrorInstance.refresh();
+	//			}
+	//		});
+	//	},
+	//	changeEditorFontsize: function(value) {
+	//		var newFontsize = (Math.round(parseFloat(_editorStorageSettings.fontSize) * 100) / 100) + (value === 1 ? 0.1 : -0.1);
+	//		newFontsize = (value === 0 ? 1 : newFontsize);
+	//		if (parseFloat(newFontsize) < 0.1) newFontsize = 0.1;
+	//		_fontsizeStylesheet.removeChild(_fontsizeStylesheet.childNodes[0])
+	//		_fontsizeStylesheet.appendChild(document.createTextNode(".CodeMirror{font-size:" + newFontsize + "em;}"));
+	//		_settingsController.updateStorageSetting("fontSize", newFontsize);
+	//		_codeMirrorInstance.refresh();
+	//	},
+	//	toggleGutter: function() {
+	//		var isActive = _menuBtnOptionsGutter.getAttribute("class") === "menu-button-active",
+	//		gutterSetting = isActive ? false : true;
+	//		_menuBtnOptionsGutter.setAttribute("class", isActive ? "menu-button" : "menu-button-active");
+	//		_codeMirrorInstance.setOption("lineNumbers", gutterSetting);
+	//		_codeMirrorInstance.setOption("gutter", gutterSetting);
+	//		_settingsController.updateStorageSetting("gutter", gutterSetting);
+	//	},
+	//	toggleWordWrap: function() {
+	//		var isActive = _menuBtnOptionsWordwrap.getAttribute("class") === "menu-button-active",
+	//		wordwrapSetting = isActive ? false : true;
+	//		_menuBtnOptionsWordwrap.setAttribute("class", isActive ? "menu-button" : "menu-button-active");
+	//		_codeMirrorInstance.setOption("lineWrapping", wordwrapSetting);
+	//		_settingsController.updateStorageSetting("wordWrap", wordwrapSetting);
+	//	},
+	//	setTheme: function(menuBtn, themeName) {
+	//		var isActive = menuBtn.getAttribute("class") === "menu-button-active",
+	//		oppositeMenuButton = (themeName == "dark" ? _menuBtnStyleBright : _menuBtnStyleDark);
+    //
+	//		if (!isActive) {
+	//			menuBtn.setAttribute("class", isActive ? "menu-button" : "menu-button-active");
+	//			oppositeMenuButton.setAttribute("class", "menu-button");
+	//		}
+    //
+	//		_codeMirrorInstance.setOption("theme", themeName);
+	//		_settingsController.updateStorageSetting("theme", themeName);
+	//	},
+	//	setButtonStates: function() {
+	//		//_menuBtnStyleBright.setAttribute("class", _settingsController.checkStorageSetting("theme") === "bright" ? "menu-button-active" : "menu-button");
+	//		//_menuBtnStyleDark.setAttribute("class", _settingsController.checkStorageSetting("theme") === "dark" ? "menu-button-active" : "menu-button");
+	//		//_menuBtnOptionsGutter.setAttribute("class", _settingsController.checkStorageSetting("gutter") === true ? "menu-button-active" : "menu-button");
+	//		//_menuBtnOptionsWordwrap.setAttribute("class", _settingsController.checkStorageSetting("wordWrap") === true ? "menu-button-active" : "menu-button");
+	//	},
+	//	hideMenuBar: function() {
+	//		_menuBar.style.display = "none";
+	//		_menuStartButton.style.display = "block";
+	//	},
+	//	showMenuBar: function() {
+	//		_menuBarTimer = clearTimeout(_menuBarTimer);
+	//		_menuBar.style.display = "block";
+	//		_menuStartButton.style.display = "none";
+	//	},
+	//	menuMouseOverHandler: function() {
+	//		_menuController.showMenuBar();
+	//	},
+	//	menuMouseOutHandler: function(evt) {
+	//		if (!_menuTxtImagePathFocus) _menuBarTimer = setTimeout(_menuController.hideMenuBar, 800);
+	//	}
+	//}
 	
-	try {
-		var localStorage = window.localStorage;
-	} catch(e) {
-		alert("Cookies must be enabled in order to use HTMLiveCode.\nThe editor will work but you will lose all data on reload.")
-
-		var localStorage = {};
-		localStorage.arrStore = [];
-
-		localStorage.getItem = function(key) {
-			return (localStorage.arrStore[key]) ? localStorage.arrStore[key] : null;
-		}
-
-		localStorage.setItem = function(key, object) {
-			localStorage.arrStore[key] = object;
-		}
-
-		localStorage.removeItem = function(key) {
-			for (var _key in localStorage.arrStore) {
-				if (localStorage.arrStore[_key] == key) {
-					localStorage.arrStore.splice(_key, 1);
-				}
-			}
-		}
-	}
+	//try {
+	//	var localStorage = window.localStorage;
+	//} catch(e) {
+	//	alert("Cookies must be enabled in order to use HTMLiveCode.\nThe editor will work but you will lose all data on reload.")
+    //
+	//	var localStorage = {};
+	//	localStorage.arrStore = [];
+    //
+	//	localStorage.getItem = function(key) {
+	//		return (localStorage.arrStore[key]) ? localStorage.arrStore[key] : null;
+	//	}
+    //
+	//	localStorage.setItem = function(key, object) {
+	//		localStorage.arrStore[key] = object;
+	//	}
+    //
+	//	localStorage.removeItem = function(key) {
+	//		for (var _key in localStorage.arrStore) {
+	//			if (localStorage.arrStore[_key] == key) {
+	//				localStorage.arrStore.splice(_key, 1);
+	//			}
+	//		}
+	//	}
+	//}
 
 	return {
 		init: function() {
 			CodeMirror.keyMap.HTMLiveCode = {
-				"Alt-0": function() { _menuController.changeEditorFontsize(0); },
-				"Alt-I": function() { _menuController.changeEditorFontsize(1); },
-				"Alt-O": function() { _menuController.changeEditorFontsize(-1); },
-				"Alt-G": function() { _menuController.toggleGutter(); },
-				"Alt-M": function() {
-					if (_menuBar.style.display === "none" || _menuBar.style.display === "") {
-						_menuController.showMenuBar();
-					} else {
-						_menuController.hideMenuBar();
-					}
-				},
-				"Alt-T": function() {
-					var brightThemeIsActive = _menuBtnStyleBright.getAttribute("class") === "menu-button-active";
-					_menuController.setTheme(brightThemeIsActive ? _menuBtnStyleDark : _menuBtnStyleBright, brightThemeIsActive ? "dark" : "bright");
-				},
-				"Alt-W": function() { _menuController.toggleWordWrap(); },
+				//"Alt-0": function() { _menuController.changeEditorFontsize(0); },
+				//"Alt-I": function() { _menuController.changeEditorFontsize(1); },
+				//"Alt-O": function() { _menuController.changeEditorFontsize(-1); },
+				//"Alt-G": function() { _menuController.toggleGutter(); },
+				//"Alt-M": function() {
+				//	if (_menuBar.style.display === "none" || _menuBar.style.display === "") {
+				//		_menuController.showMenuBar();
+				//	} else {
+				//		_menuController.hideMenuBar();
+				//	}
+				//},
+				//"Alt-T": function() {
+				//	var brightThemeIsActive = _menuBtnStyleBright.getAttribute("class") === "menu-button-active";
+				//	_menuController.setTheme(brightThemeIsActive ? _menuBtnStyleDark : _menuBtnStyleBright, brightThemeIsActive ? "dark" : "bright");
+				//},
+				//"Alt-W": function() { _menuController.toggleWordWrap(); },
 				fallthrough: ["default"]
 			};
 		
-			_codeMirrorInstance = CodeMirror(document.body, {
+			_codeMirrorInstance = CodeMirror(
+                element, {
 				mode: "text/html",
 				indentWithTabs: true,
 				lineWrapping: _editorDefaultSettings.wordWrap,
@@ -423,54 +428,59 @@ var HTMLiveCode = function() {
 					if (!_initialized) {
 						_initialized = true;
 						_codeView = _codeMirrorInstance.getWrapperElement();
-						
-						if (localStorage.getItem("htmlivecodeText") !== null) {
-							_codeMirrorInstance.setValue(localStorage.getItem("htmlivecodeText"));
-						} else {
-							_codeMirrorInstance.setValue(HTMLiveCodeTemplate);
-						}
 
-						if (localStorage.getItem("htmlivecodeSettings") !== null) {
-							_editorStorageSettings = JSON.parse(localStorage.getItem("htmlivecodeSettings"));
-							_settingsController.applySettings();
-						} else {
-							localStorage.setItem("htmlivecodeSettings", JSON.stringify(_editorDefaultSettings));
-							_editorStorageSettings = _cloneObject(_editorDefaultSettings);
-						}
+                        _codeMirrorInstance.setValue(
+                            $(_editorDefaultSettings.element).val()
+                        );
+
+						//if (localStorage.getItem("htmlivecodeText") !== null) {
+						//	_codeMirrorInstance.setValue(localStorage.getItem("htmlivecodeText"));
+						//} else {
+						//	_codeMirrorInstance.setValue(HTMLiveCodeTemplate);
+						//}
+                        //
+						//if (localStorage.getItem("htmlivecodeSettings") !== null) {
+						//	_editorStorageSettings = JSON.parse(localStorage.getItem("htmlivecodeSettings"));
+						//	_settingsController.applySettings();
+						//} else {
+						//	localStorage.setItem("htmlivecodeSettings", JSON.stringify(_editorDefaultSettings));
+						//	_editorStorageSettings = _cloneObject(_editorDefaultSettings);
+						//}
 
 						_resizeController.resizeAreas();
 						_updateViews();	
-						_menuController.init();
+						//_menuController.init();
 						_resizeController.init();
 					}
 				},
 				onChange: function() {
 					_updateViews();
-					localStorage.setItem("htmlivecodeText", _codeMirrorInstance.getValue());
+                    $(_editorDefaultSettings.element).val(_codeMirrorInstance.getValue());
+					//localStorage.setItem("htmlivecodeText", _codeMirrorInstance.getValue());
 				},
 				onGutterClick: _foldFunc
 			});
 
 			_resizeBar.setAttribute("id", "resize-control");
-			document.body.appendChild(_resizeBar);
+            element.appendChild(_resizeBar);
 			
 			_resizeArea.setAttribute("id", "resize-area");
-			document.body.appendChild(_resizeArea);
+            element.appendChild(_resizeArea);
 			
 			_livePreview.setAttribute("id", "live-preview");
-			document.body.appendChild(_livePreview);
+            element.appendChild(_livePreview);
 
 			_fontsizeStylesheet.setAttribute("type", "text/css");
 			_fontsizeStylesheet.appendChild(document.createTextNode(".CodeMirror{font-size:"+ _editorDefaultSettings.fontSize +"em;}"));
-			document.body.appendChild(_fontsizeStylesheet);
+            element.appendChild(_fontsizeStylesheet);
 			
-			if (localStorage.getItem("htmlivecodeText") === null) {
-				_introTooltip.style.left = ((_browserWidth / 2) - 235) + "px";
-				_introTooltip.style.display = "inline";
-				setTimeout(function(){
-					_fadeOut(_introTooltip, 2000);
-				}, 3000);
-			}
+			//if (localStorage.getItem("htmlivecodeText") === null) {
+			//	_introTooltip.style.left = ((_browserWidth / 2) - 235) + "px";
+			//	_introTooltip.style.display = "inline";
+			//	setTimeout(function(){
+			//		_fadeOut(_introTooltip, 2000);
+			//	}, 3000);
+			//}
 		},
 		resizeAreas: _resizeController.resizeAreas
 	}
