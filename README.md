@@ -7,12 +7,14 @@ new basic usage:
 
 ```
 <textarea style="display:none;" id="name" name="name">value</textarea>
-window.addEventListener("DOMContentLoaded", function() {
-	window.liveEditor = new HTMLiveCode({
-		element: "#name"
+<script>
+	window.addEventListener("DOMContentLoaded", function() {
+		window.liveEditor = new HTMLiveCode({
+			element: "#<?=$name?>"
+		});
+		window.liveEditor.init();
 	});
-	window.liveEditor.init();
-});
+</script>
 ```
 
 ## A browser-based editor for real-time HTML/CSS/JS prototyping
