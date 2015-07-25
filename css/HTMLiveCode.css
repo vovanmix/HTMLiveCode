@@ -498,3 +498,33 @@ sup {
 		left:536px;
 	}
 }
+
+
+
+#HTMLiveCodeContainer{
+	position: relative;
+	width: 100%;
+}
+
+#HTMLiveCodeContainer .CodeMirror.CodeMirror-wrap{
+	height: 300px !important;
+	width: 100% !important;
+	position: relative;
+	border: 1px solid #eee;
+}
+
+#live-preview{
+	height: 300px !important;
+	width: 100% !important;
+	position: relative;
+	border: 1px solid #111;
+	box-shadow: 3px 3px 3px #aaa;
+}
+
+html, body{
+	overflow: visible!important;
+}
+
+#resize-control, #resize-area{
+	display: none;
+}
