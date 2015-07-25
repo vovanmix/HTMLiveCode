@@ -1,6 +1,8 @@
 HTMLiveCode
 ===========
 
+This branch is optimized for embedding into the page, some unused featured removed
+
 ## A browser-based editor for real-time HTML/CSS/JS prototyping
 
 HTMLiveCode is a simple editor which is built on top of HTML, CSS and JavaScript. It was made for the editing of these languages and can be used for rapid prototyping. The editor can be customized in its appearance so there are themes and some other editor options. HTMLiveCode is based on CodeMirror and makes use of JSLint and HTML5's localStorage.
