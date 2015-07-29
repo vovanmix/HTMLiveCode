@@ -49,6 +49,13 @@ var HTMLiveCode = function() {
     $(_editorDefaultSettings.element).after('<div id="HTMLiveCodeContainer"></div>');
     var element = document.getElementById('HTMLiveCodeContainer');
 
+    String.prototype.replaceAll = function(search, replace) {
+        if (replace === undefined) {
+            return this.toString();
+        }
+        return this.split(search).join(replace);
+    }
+
 	var _updateViews = function() {
 		var codeMirrorContent = _codeMirrorInstance.getValue(),
 		livePreview = _livePreview.contentDocument || _livePreview.contentWindow.document;
@@ -61,9 +68,13 @@ var HTMLiveCode = function() {
 			codeMirrorContent = codeMirrorContent.replace(/url\(['"]{0,}(.+?)['"]{0,}\)/g, "url('" + _imageProxyPath + "$1?" + new Date().getTime() + "')");
 			codeMirrorContent = codeMirrorContent.replace(/<img([^>]*)\ssrc=(['"])(.*?)\2(.*?)>/gi, "<img$1 src=$2" + _imageProxyPath + "$3?" + new Date().getTime() + "$2 $4>");
 		}
-		
+
 		var codeMirrorContentTrimmed = codeMirrorContent.replace(/[\r\n\t]+/gm, ""),
 		codeMirrorContentScripts = codeMirrorContentTrimmed.match(/<\s*script(?:.*)>(.*)<\/\s*script\s*>/i);
+
+        codeMirrorContent = codeMirrorContent.replaceAll('<?php', '<!--<?php');
+        codeMirrorContent = codeMirrorContent.replaceAll('?>', '?>-->');
+
 
 		if (codeMirrorContentScripts !== null) {
 			try {
