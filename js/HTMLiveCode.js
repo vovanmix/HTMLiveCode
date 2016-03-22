@@ -43,7 +43,9 @@ var HTMLiveCode = function() {
 		gutter: settings.gutter === false ? false : true,
 		imageProxyPath: _imageProxyPath,
 		codeViewWidth: parseInt(window.innerWidth) / 2,
-		livePreviewWidth: (parseInt(window.innerWidth) / 2) - _resizeBarWidth
+		livePreviewWidth: (parseInt(window.innerWidth) / 2) - _resizeBarWidth,
+		codeMirrorContentBeforeElement: settings.codeMirrorContentBeforeElement || false,
+		codeMirrorContentAfterElement: settings.codeMirrorContentAfterElement || false
 	};
 
     $(_editorDefaultSettings.element).after('<div id="HTMLiveCodeContainer"></div>');
@@ -72,9 +74,16 @@ var HTMLiveCode = function() {
 		var codeMirrorContentTrimmed = codeMirrorContent.replace(/[\r\n\t]+/gm, ""),
 		codeMirrorContentScripts = codeMirrorContentTrimmed.match(/<\s*script(?:.*)>(.*)<\/\s*script\s*>/i);
 
-        codeMirrorContent = codeMirrorContent.replaceAll('<?php', '<!--<?php');
-        codeMirrorContent = codeMirrorContent.replaceAll('?>', '?>-->');
+        // codeMirrorContent = codeMirrorContent.replaceAll('<?php', 'TBD<!--<?php');
+        // codeMirrorContent = codeMirrorContent.replaceAll('?>', '?>-->');
+		codeMirrorContent = codeMirrorContent.replace(/<\?php\s*[^\?]+\s*\?>/g, 'TBD')
 
+		if(_editorDefaultSettings.codeMirrorContentBeforeElement){
+			codeMirrorContent = $(_editorDefaultSettings.codeMirrorContentBeforeElement).text() + codeMirrorContent;
+		}
+		if(_editorDefaultSettings.codeMirrorContentAfterElement){
+			codeMirrorContent = codeMirrorContent + $(_editorDefaultSettings.codeMirrorContentAfterElement).text();
+		}
 
 		if (codeMirrorContentScripts !== null) {
 			try {
