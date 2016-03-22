@@ -74,9 +74,11 @@ var HTMLiveCode = function() {
 		var codeMirrorContentTrimmed = codeMirrorContent.replace(/[\r\n\t]+/gm, ""),
 		codeMirrorContentScripts = codeMirrorContentTrimmed.match(/<\s*script(?:.*)>(.*)<\/\s*script\s*>/i);
 
-        // codeMirrorContent = codeMirrorContent.replaceAll('<?php', 'TBD<!--<?php');
-        // codeMirrorContent = codeMirrorContent.replaceAll('?>', '?>-->');
-		codeMirrorContent = codeMirrorContent.replace(/<\?php\s*[^\?]+\s*\?>/g, 'TBD')
+        	// codeMirrorContent = codeMirrorContent.replaceAll('<?php', 'TBD<!--<?php');
+        	// codeMirrorContent = codeMirrorContent.replaceAll('?>', '?>-->');
+		// codeMirrorContent = codeMirrorContent.replace(/<\?php\s*[^\?]+\s*\?>/g, 'TBD')
+		codeMirrorContent = codeMirrorContent.replace(/<\?php\s*echo \$template\-\>getData\(\'(.*?)\'\, \'(.*?)\'\)\s*\?>/g, '$2');
+		codeMirrorContent = codeMirrorContent.replace(/<\?php\s*echo \$template\-\>getData\(\'(.*?)\'\)\s*\?>/g, 'TBD');
 
 		if(_editorDefaultSettings.codeMirrorContentBeforeElement){
 			codeMirrorContent = $(_editorDefaultSettings.codeMirrorContentBeforeElement).text() + codeMirrorContent;
